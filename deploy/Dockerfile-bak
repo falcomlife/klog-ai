@@ -1,0 +1,11 @@
+﻿FROM registry.baidubce.com/paddlepaddle/paddle:2.1.0-gpu-cuda11.2-cudnn8
+ARG CONTAINERNAME
+RUN python3 -m pip install -i https://mirror.baidu.com/pypi/simple scikit-build cmake
+RUN python3 -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple numpy
+RUN python3 -m pip install opencv-python
+WORKDIR /opt
+#copy config to container
+COPY object-0.0.1-py3-none-any.whl /opt/object/
+COPY work/ /opt/object/work/
+COPY src/ /opt/object/src/
+ENV PYTHONPATH $PYTHONPATH:/opt/object/src/

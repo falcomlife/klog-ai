@@ -1,0 +1,34 @@
+apiVersion: batch.paddlepaddle.org/v1
+kind: PaddleJob
+metadata:
+  name: object
+  namespace: paddle-system
+spec:
+  cleanPodPolicy: Never
+  worker:
+    replicas: 1
+    template:
+      spec:
+        imagePullSecrets:
+        - name: registry-pull-secret
+        containers:
+        - name: paddle
+          image: swr.cn-north-4.myhuaweicloud.com/cotte-bigdata/object:_VERSION_
+          imagePullPolicy: Always
+          command:
+          - fleetrun
+          args:
+          - "--gpus=0"
+          - "--ips=object-worker-0.paddle-system,object-worker-1.paddle-system"
+          - "/opt/object/src/core/run.py"
+          - "/opt/object/src/core/test.ini"
+          volumeMounts:
+          - mountPath: /checkpoint/
+            name: dshm
+          resources:
+            limits:
+              cpu: 2000m
+        volumes:
+        - name: dshm
+          persistentVolumeClaim:
+            claimName: object
